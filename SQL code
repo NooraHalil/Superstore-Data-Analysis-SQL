@@ -1,0 +1,436 @@
+DONE USING POSTGRESQL
+
+--Total Customer	
+
+SELECT  segment, count(*) AS total_customers
+FROM customers
+GROUP BY 1
+ORDER BY 2 DESC
+
+--Orders by Customers
+SELECT customer_name, COUNT(order_id) Number_of_orders, 
+					  ROUND(avg(sales),2) avg_per_order
+					  SUM(sales) Total_sales , 
+					  SUM(discount) Total_Discount, 
+					  SUM(profit) Total_profit,
+from orders so INNER JOIN customers AS c
+				USING(customer_id)
+GROUP BY 1
+
+--Analysis by Category	
+
+SELECT customer_name, COUNT(order_id) Number_of_orders, 
+					  ROUND(avg(sales),2) avg_per_order,
+					  SUM(sales) Total_sales , 
+					  SUM(discount) Total_Discount, 
+					  SUM(profit) Total_profit
+from orders so INNER JOIN customers AS c
+				USING(customer_id)
+GROUP BY 1
+
+--Analysis by Sub-category
+
+SELECT category, sub_category, COUNT(order_id) Number_of_orders, 
+					  ROUND(avg(sales),2) avg_per_order,
+					  SUM(sales) Total_sales , 
+					  SUM(discount) Total_Discount, 
+					  SUM(profit) Total_profit
+from orders so INNER JOIN products AS p
+				USING(product_id)
+GROUP BY 1,2
+
+--Gross Profit Analysis	
+
+SELECT  TSN_YEAR, total_sales, total_discount, total_profit, ROUND((total_profit / total_sales),4) * 100 as gp_MARGIN
+FROM
+(select EXTRACT(year from order_date) As TSN_YEAR, 
+	   SUM(sales) total_sales, 
+	   SUM(discount) total_discount, 
+	   SUM(profit) total_profit
+from orders
+group by 1) As T1
+group by 1, 2, 3, 4, 5
+order by 1 asc 
+
+--Sales Descriptive Analysis	
+
+SELECT 'TOTAL' Analysis_On,
+		ROUND(SUM(sales),2) AS Sales,
+		ROUND(SUM(quantity),2) AS Total_Qty,
+		ROUND(SUM(sales*discount),2) AS Discount,
+		ROUND(SUM(PROFIT),2) Total_Profit
+FROM ORDERS
+UNION
+SELECT 'AVERAGE' AS Average,
+		ROUND(AVG(sales),2),
+		ROUND(AVG(quantity),2),
+		ROUND(AVG(sales*discount),2),
+		ROUND(AVG(PROFIT),2)
+FROM orders
+UNION
+SELECT 'MAX' AS MAXIMUM,
+		ROUND(MAX(sales),2),
+		ROUND(MAX(quantity),2),
+		ROUND(MAX(sales*discount),2),
+		ROUND(MAX(PROFIT),2)
+FROM orders
+UNION
+SELECT 'MIN' AS MINIMUM,
+		ROUND(MIN(sales),2),
+		ROUND(MIN(quantity),2),
+		ROUND(MIN(sales*discount),2),
+		ROUND(MIN(PROFIT),2)
+FROM orders
+UNION
+SELECT 'COUNT' AS COUNTS,
+		ROUND(COUNT(sales),2),
+		ROUND(COUNT(quantity),2),
+		ROUND(COUNT(sales*discount),2),
+		ROUND(COUNT(PROFIT),2)
+FROM orders
+
+--Yearly Sales Analysis	
+
+SELECT '2015' YEARS,
+		ROUND(COUNT( DISTINCT ORDER_ID),0) AS Total_orders,
+		ROUND(SUM(sales),0) AS Sales,
+		ROUND(SUM(quantity),0) AS Total_Qty,
+		ROUND(SUM(sales*discount),0) AS Discount,
+		ROUND(SUM(PROFIT),0) Total_Profit,
+		ROUND(SUM(PROFIT)/SUM(SALES)*100,3) AS Gross_Profit
+FROM ORDERS
+WHERE EXTRACT(year from order_date) = 2015
+UNION
+SELECT '2016' YEARS,
+		ROUND(COUNT( DISTINCT ORDER_ID),0) AS Total_orders,
+		ROUND(SUM(sales),0) AS Sales,
+		ROUND(SUM(quantity),0) AS Total_Qty,
+		ROUND(SUM(sales*discount),0) AS Discount,
+		ROUND(SUM(PROFIT),0) Total_Profit,
+		ROUND(SUM(PROFIT)/SUM(SALES)*100,3) AS Gross_Profit
+FROM ORDERS
+WHERE EXTRACT(year from order_date) = 2016
+UNION
+SELECT '2017' YEARS,
+		ROUND(COUNT( DISTINCT ORDER_ID),0) AS Total_orders,
+		ROUND(SUM(sales),0) AS Sales,
+		ROUND(SUM(quantity),0) AS Total_Qty,
+		ROUND(SUM(sales*discount),0) AS Discount,
+		ROUND(SUM(PROFIT),0) Total_Profit,
+		ROUND(SUM(PROFIT)/SUM(SALES)*100,3) AS Gross_Profit
+FROM ORDERS
+WHERE EXTRACT(year from order_date) = 2017
+UNION
+SELECT '2018' YEARS,
+		ROUND(COUNT( DISTINCT ORDER_ID),0) AS Total_orders,
+		ROUND(SUM(sales),0) AS Sales,
+		ROUND(SUM(quantity),0) AS Total_Qty,
+		ROUND(SUM(sales*discount),0) AS Discount,
+		ROUND(SUM(PROFIT),0) Total_Profit,
+		ROUND(SUM(PROFIT)/SUM(SALES)*100,3) AS Gross_Profit
+FROM ORDERS
+WHERE EXTRACT(year from order_date) = 2018
+UNION
+SELECT '2019' YEARS,
+		ROUND(COUNT( DISTINCT ORDER_ID),0) AS Total_orders,
+		ROUND(SUM(sales),0) AS Sales,
+		ROUND(SUM(quantity),0) AS Total_Qty,
+		ROUND(SUM(sales*discount),0) AS Discount,
+		ROUND(SUM(PROFIT),0) Total_Profit,
+		ROUND(SUM(PROFIT)/SUM(SALES)*100,3) AS Gross_Profit
+FROM ORDERS
+WHERE EXTRACT(year from order_date) = 2019
+UNION
+SELECT '2020' YEARS,
+		ROUND(COUNT( DISTINCT ORDER_ID),0) AS Total_orders,
+		ROUND(SUM(sales),0) AS Sales,
+		ROUND(SUM(quantity),0) AS Total_Qty,
+		ROUND(SUM(sales*discount),0) AS Discount,
+		ROUND(SUM(PROFIT),0) Total_Profit,
+		ROUND(SUM(PROFIT)/SUM(SALES)*100,3) AS Gross_Profit
+FROM ORDERS
+WHERE EXTRACT(year from order_date) = 2020
+ORDER BY 1 ASC
+
+--Segment Sales Analysis	
+
+SELECT 'CONSUMER' SEGMENT,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN CUSTOMERS C
+		USING(CUSTOMER_ID)
+WHERE C.SEGMENT = 'Consumer'
+UNION
+SELECT 'CORPORATE' SEGMENT,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN CUSTOMERS C
+		USING(CUSTOMER_ID)
+WHERE C.SEGMENT = 'Corporate'
+UNION
+SELECT 'HOME OFFICE' SEGMENT,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN CUSTOMERS C
+		USING(CUSTOMER_ID)
+WHERE C.SEGMENT = 'Home Office'
+ORDER BY 1 ASC
+
+--Sub-Category Sales Analysis
+
+SELECT 'ENVELOPES' SUB_CATEGORY,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN PRODUCTS P
+		USING(PRODUCT_ID)
+WHERE P.SUB_CATEGORY = 'Envelopes'
+UNION
+SELECT 'FASTENERS' SUB_CATEGORY,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN PRODUCTS P
+		USING(PRODUCT_ID)
+WHERE P.SUB_CATEGORY = 'Fasteners'
+UNION
+SELECT 'APPLIANCES' SUB_CATEGORY,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN PRODUCTS P
+		USING(PRODUCT_ID)
+WHERE P.SUB_CATEGORY = 'Appliances'
+UNION
+SELECT 'ACCESSORIES' SUB_CATEGORY,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN PRODUCTS P
+		USING(PRODUCT_ID)
+WHERE P.SUB_CATEGORY = 'Accessories'
+UNION
+SELECT 'PAPER' SUB_CATEGORY,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN PRODUCTS P
+		USING(PRODUCT_ID)
+WHERE P.SUB_CATEGORY = 'Paper'
+UNION
+SELECT 'PHONES' SUB_CATEGORY,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN PRODUCTS P
+		USING(PRODUCT_ID)
+WHERE P.SUB_CATEGORY = 'Phones'
+UNION
+SELECT 'BINDERS' SUB_CATEGORY,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN PRODUCTS P
+		USING(PRODUCT_ID)
+WHERE P.SUB_CATEGORY = 'Binders'
+UNION
+SELECT 'COPIERS' SUB_CATEGORY,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN PRODUCTS P
+		USING(PRODUCT_ID)
+WHERE P.SUB_CATEGORY = 'Copiers'
+UNION
+SELECT 'LABELS' SUB_CATEGORY,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN PRODUCTS P
+		USING(PRODUCT_ID)
+WHERE P.SUB_CATEGORY = 'Labels'
+UNION
+SELECT 'SUPPLIES' SUB_CATEGORY,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN PRODUCTS P
+		USING(PRODUCT_ID)
+WHERE P.SUB_CATEGORY = 'Supplies'
+UNION
+SELECT 'CHAIRS' SUB_CATEGORY,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN PRODUCTS P
+		USING(PRODUCT_ID)
+WHERE P.SUB_CATEGORY = 'Chairs'
+UNION
+SELECT 'MACHINES' SUB_CATEGORY,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN PRODUCTS P
+		USING(PRODUCT_ID)
+WHERE P.SUB_CATEGORY = 'Machines'
+UNION
+SELECT 'FURNISHINGS' SUB_CATEGORY,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN PRODUCTS P
+		USING(PRODUCT_ID)
+WHERE P.SUB_CATEGORY = 'Furnishings'
+UNION
+SELECT 'TABLES' SUB_CATEGORY,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN PRODUCTS P
+		USING(PRODUCT_ID)
+WHERE P.SUB_CATEGORY = 'Tables'
+UNION
+SELECT 'ART' SUB_CATEGORY,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN PRODUCTS P
+		USING(PRODUCT_ID)
+WHERE P.SUB_CATEGORY = 'Art'
+UNION
+SELECT 'STORAGE' SUB_CATEGORY,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN PRODUCTS P
+		USING(PRODUCT_ID)
+WHERE P.SUB_CATEGORY = 'Storage'
+UNION
+SELECT 'BOOKCASES' SUB_CATEGORY,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN PRODUCTS P
+		USING(PRODUCT_ID)
+WHERE P.SUB_CATEGORY = 'Bookcases'
+ORDER BY 7 DESC
+
+--Category Sales Analysis	
+
+SELECT 'FURNITURE' CATEGORY,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN PRODUCTS P
+		USING(PRODUCT_ID)
+WHERE P.CATEGORY = 'Furniture'
+UNION
+SELECT 'OFFICE SUPPLIES' SUB_CATEGORY,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN PRODUCTS P
+		USING(PRODUCT_ID)
+WHERE P.CATEGORY = 'Office Supplies'
+UNION
+SELECT 'TECHNOLOGY' SUB_CATEGORY,
+		ROUND(COUNT(SO.sales),0) AS Total_orders,
+		ROUND(SUM(SO.sales),0) AS Sales,
+		ROUND(SUM(SO.quantity),0) AS Total_Qty,
+		ROUND(SUM(SO.sales*SO.discount),0) AS Discount,
+		ROUND(SUM(SO.PROFIT),0) Total_Profit,
+		ROUND(SUM(SO.PROFIT)/SUM(SO.SALES)*100,3) AS Gross_Profit
+FROM ORDERS SO INNER JOIN PRODUCTS P
+		USING(PRODUCT_ID)
+WHERE P.CATEGORY = 'Technology'
+
+--Return Analysis	
+
+SELECT EXTRACT(year from RT_date), SUM(SALES_RETURN) RETURN_TOTAL, 
+								   SUM(PROFIT_RETURN) RETURN_PROFIT,
+								   SUM(PROFIT_RETURN) / SUM(SALES_RETURN) AS RETURN_GP
+FROM
+(SELECT RT.RETURN_DATE as RT_date, rt.order_id, rt.product_id, rt.return_quantity, 
+		so.sales, so.quantity, so.profit, (so.sales / so.quantity) * rt.return_quantity sales_return,
+		(profit / quantity) * rt.return_quantity as PROFIT_RETURN
+FROM returns rt left join orders so
+	on rt.order_id = so.order_id
+	and rt.product_id = so.product_id) AS RTN
+GROUP BY 1
+ORDER BY 1
+
+Customer by Segment Analysis	
+
+select segment, count(*) 
+from customers
+group by 1
+order by 2 desc
